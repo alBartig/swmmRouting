@@ -48,6 +48,25 @@ class Router:
         logger.info(f"Routing table from {target} with {len(columns)} columns created")
         return df_routing
 
+    def from_seeding_table(self, seeding_table, target):
+        """
+        Uses a seeding table and a target to generate a routing table by copying only
+        columns from seeding table that are in the target catchment to the routing table.
+        Args:
+            seeding_table: table with seeds for routing table
+            target (str): node / catchment outlet
+
+        Returns:
+            routing_table: routing table
+        """
+        rt0 = self.generate_empty_routingtable(target)
+        # Reindex df2 to match the columns of df1, filling missing columns with NaN
+        seeding_table = seeding_table.reindex(columns=rt0.columns)
+        # Concatenate df1 and df2_reindexed
+        rt0 = pd.concat([rt0, seeding_table], ignore_index=True)
+        return rt0
+
+
     @staticmethod
     def from_old_routingtable(rtable):
         """
